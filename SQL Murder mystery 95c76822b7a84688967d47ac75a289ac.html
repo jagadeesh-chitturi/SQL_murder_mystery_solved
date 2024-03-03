@@ -1,0 +1,731 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>SQL Murder mystery</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="95c76822-b7a8-4688-967d-47ac75a289ac" class="page sans"><header><img class="page-cover-image" src="https://images.unsplash.com/photo-1593510987185-1ec2256148a3?ixlib=rb-4.0.3&amp;q=85&amp;fm=jpg&amp;crop=entropy&amp;cs=srgb" style="object-position:center 32.489999999999995%"/><div class="page-header-icon page-header-icon-with-cover"><img class="icon" src="https://www.notion.so/icons/search_brown.svg"/></div><h1 class="page-title">SQL Murder mystery</h1><p class="page-description"></p></header><div class="page-body"><figure id="938069d0-c321-4f5f-a20d-70a2e88a3261" class="image"><a href="https://static.wixstatic.com/media/2f94e1_da7485b10b134db7a70499f89f58b975~mv2.gif"><img src="https://static.wixstatic.com/media/2f94e1_da7485b10b134db7a70499f89f58b975~mv2.gif"/></a></figure><h3 id="ee21682e-990a-4869-b8c5-dc517d11fcdf" class="">corresponding crime scene report from the police department’s database.</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="760a664c-82d2-4286-bfbb-77dc761cc87d" class="code"><code class="language-SQL">select *
+from crime_scene_report
+where date=20180115
+and type=&#x27;murder&#x27; and
+city=&#x27;SQL City&#x27;
+## crime report</code></pre><table id="583c64d1-ec27-4c15-93ab-2bf44d101913" class="simple-table"><tbody><tr id="1d61d80e-3132-483c-bf15-e05f9372dd06"><td id="FiEb" class=""><strong>date</strong></td><td id="tRPM" class=""><strong>type</strong></td><td id="jFGU" class=""><strong>description</strong></td><td id="_ytq" class=""><strong>city</strong></td></tr><tr id="5185d927-1868-4b97-b215-ebb443fbdeee"><td id="FiEb" class="">20180115</td><td id="tRPM" class="">murder</td><td id="jFGU" class="">Security footage shows that there were 2 witnesses. The first witness lives at the last house on &quot;Northwestern Dr&quot;. The second witness, named Annabel, lives somewhere on &quot;Franklin Ave&quot;.</td><td id="_ytq" class="">SQL City</td></tr></tbody></table><hr id="c7fde6bb-f5b8-4b7f-a126-e7898f95c1e0"/><h3 id="648f2ccf-7403-40f8-b333-100782a592d7" class="">first witness details</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="aafbe73b-5a45-4f83-9a25-6ef40a9937c7" class="code"><code class="language-SQL">select *
+from person
+where address_street_name like &#x27;Northwestern Dr&#x27; and address_number in(select max(address_number) from person where address_street_name like &#x27;Northwestern Dr&#x27;)</code></pre><table id="aad69910-04d4-4e32-ba25-9a6027b2396b" class="simple-table"><tbody><tr id="4136399a-2594-4ef1-8825-e97e30a2dbb1"><td id="qY&gt;j" class=""><strong>id</strong></td><td id="JcLC" class=""><strong>name</strong></td><td id="j=`F" class=""><strong>license_id</strong></td><td id="G=&gt;q" class=""><strong>address_number</strong></td><td id="vQCc" class=""><strong>address_street_name</strong></td><td id="?gRo" class=""><strong>ssn</strong></td></tr><tr id="255e9c40-125a-4103-9f67-aec25ea7abaf"><td id="qY&gt;j" class="">14887</td><td id="JcLC" class="">Morty Schapiro</td><td id="j=`F" class="">118009</td><td id="G=&gt;q" class="">4919</td><td id="vQCc" class="">Northwestern Dr</td><td id="?gRo" class="">111564949</td></tr></tbody></table><p id="3590c306-4043-41ec-9511-cc2e745995b0" class=""><strong>interview </strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="50b1eaa4-1aa5-45b2-992d-3cadcef88596" class="code"><code class="language-SQL">select *
+from interview
+where person_id= 14887</code></pre><table id="fe7254be-cad3-415f-8f7e-b66fa78e4532" class="simple-table"><tbody><tr id="04f0be2d-7361-4988-9f6a-2f71353567af"><td id="aXOk" class=""><strong>person_id</strong></td><td id="E&lt;oo" class=""><strong>transcript</strong></td></tr><tr id="48a6d186-9660-4b0c-8d54-67742b38c74a"><td id="aXOk" class="">14887</td><td id="E&lt;oo" class="">I heard a gunshot and then saw a man run out. He had a &quot;Get Fit Now Gym&quot; bag. The membership number on the bag started with &quot;48Z&quot;. Only gold members have those bags. The man got into a car with a plate that included &quot;H42W&quot;.</td></tr></tbody></table><h3 id="998f172e-bcd8-4ff2-b571-15cb35ed90d9" class="">person matching above dsec</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="59e6de5b-20c7-4aed-9892-278e74459f91" class="code"><code class="language-SQL">select *
+from get_fit_now_member gf
+left join person p
+on gf.person_id=p.id
+left join drivers_license dl
+on p.license_id=dl.id
+where gf.id like &#x27;48Z%&#x27;
+and plate_number like &#x27;%H42W%&#x27;</code></pre><table id="69e38cee-9a00-4903-a5bd-dbb8225f21a3" class="simple-table"><tbody><tr id="5909011f-fc1f-41ae-a33b-112ecd253fdc"><td id="X\UB" class=""><strong>id</strong></td><td id="r{D:" class=""><strong>person_id</strong></td><td id="f}}y" class=""><strong>name</strong></td><td id="=Tmo" class=""><strong>membership_start_date</strong></td><td id="Qylr" class=""><strong>membership_status</strong></td><td id="SCCx" class=""><strong>id</strong></td><td id="oyGn" class=""><strong>name</strong></td><td id="HHb{" class=""><strong>license_id</strong></td><td id="f]]p" class=""><strong>address_number</strong></td><td id="E?aX" class=""><strong>address_street_name</strong></td><td id="]N;`" class=""><strong>ssn</strong></td><td id="cvBx" class=""><strong>id</strong></td><td id="BTrx" class=""><strong>age</strong></td><td id="@mRM" class=""><strong>height</strong></td><td id="RTIE" class=""><strong>eye_color</strong></td><td id="DrZ\" class=""><strong>hair_color</strong></td><td id="zw~H" class=""><strong>gender</strong></td><td id="BJUW" class=""><strong>plate_number</strong></td><td id="HM}W" class=""><strong>car_make</strong></td><td id="UPHe" class=""><strong>car_model</strong></td></tr><tr id="8a76235a-5506-4cce-a1e0-192233531b62"><td id="X\UB" class="">48Z55</td><td id="r{D:" class="">67318</td><td id="f}}y" class="">Jeremy Bowers</td><td id="=Tmo" class="">20160101</td><td id="Qylr" class="">gold</td><td id="SCCx" class="">67318</td><td id="oyGn" class="">Jeremy Bowers</td><td id="HHb{" class="">423327</td><td id="f]]p" class="">530</td><td id="E?aX" class="">Washington Pl, Apt 3A</td><td id="]N;`" class="">871539279</td><td id="cvBx" class="">423327</td><td id="BTrx" class="">30</td><td id="@mRM" class="">70</td><td id="RTIE" class="">brown</td><td id="DrZ\" class="">brown</td><td id="zw~H" class="">male</td><td id="BJUW" class="">0H42W2</td><td id="HM}W" class="">Chevrolet</td><td id="UPHe" class="">Spark LS</td></tr></tbody></table><hr id="18178da4-4a3f-4ca2-8427-7edd5297fed9"/><p id="c6e22398-39b5-48eb-8f39-f2d3c1afbb1b" class="">
+</p><h3 id="be0320bd-05a3-47db-9f42-7f8ae67c7f4f" class="">second witness details</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="7e52d54a-0957-477e-8bf1-d846342e6160" class="code"><code class="language-SQL">select *
+from person
+where (name like &#x27;%Annabel%&#x27; and address_street_name like &#x27;Franklin Ave&#x27;)</code></pre><table id="40e80f5f-d0b0-481e-9b68-9f3eb7ca4fc1" class="simple-table"><tbody><tr id="2929899d-d593-47f5-b098-01e4a5dc0a77"><td id="w~Wi" class=""><strong>id</strong></td><td id="\zOk" class=""><strong>name</strong></td><td id="oxx\" class=""><strong>license_id</strong></td><td id="hrt=" class=""><strong>address_number</strong></td><td id="VyIb" class=""><strong>address_street_name</strong></td><td id="VPx&lt;" class=""><strong>ssn</strong></td></tr><tr id="98f4fcc0-4cb3-4c6c-b9f6-1e9f48c0af8d"><td id="w~Wi" class="">16371</td><td id="\zOk" class="">Annabel Miller</td><td id="oxx\" class="">490173</td><td id="hrt=" class="">103</td><td id="VyIb" class="">Franklin Ave</td><td id="VPx&lt;" class="">318771143</td></tr></tbody></table><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="92f33d26-5b1c-4d00-a5b5-4028e9b85b97" class="code"><code class="language-SQL">#interview of 2nd
+select *
+from interview
+ where person_id=16371</code></pre><table id="2413e5c8-5071-4215-b022-803149ed9131" class="simple-table"><tbody><tr id="89ad08ba-b10a-45f3-9e19-49eb90e775a0"><td id="rv}&gt;" class=""><strong>person_id</strong></td><td id="=?Q@" class=""><strong>transcript</strong></td></tr><tr id="5bd537b4-cd51-4325-9f0d-d8924b7b83e1"><td id="rv}&gt;" class="">16371</td><td id="=?Q@" class="">I saw the murder happen, and I recognized the killer from my gym when I was working out last week on January the 9th.</td></tr></tbody></table><figure id="be5d8322-2c58-4084-871e-b1bd7d6e2d64" class="image"><a href="https://media2.giphy.com/media/NS7gPxeumewkWDOIxi/giphy.gif?cid=7941fdc6pap9cy8payxgm2oseal65lt8z7jvocgfpl326zy1&amp;ep=v1_gifs_search&amp;rid=giphy.gif&amp;ct=g"><img src="https://media2.giphy.com/media/NS7gPxeumewkWDOIxi/giphy.gif?cid=7941fdc6pap9cy8payxgm2oseal65lt8z7jvocgfpl326zy1&amp;ep=v1_gifs_search&amp;rid=giphy.gif&amp;ct=g"/></a></figure><h3 id="d0104ab9-6203-4e4c-831d-b74427e02415" class="">get annabel gym timings on above day</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="cc3d382c-1094-4882-8a3d-f09eac488aab" class="code"><code class="language-SQL">select *
+from get_fit_now_member fn
+inner join get_fit_now_check_in fc
+on fn.id=fc.membership_id
+where check_in_date = 20180109
+and person_id=16371</code></pre><table id="21def891-4c20-4769-856a-94b5149e13cf" class="simple-table"><tbody><tr id="e1658d59-2211-479c-aa6c-a68071a846b1"><td id="Lmnw" class=""><strong>id</strong></td><td id="}Nh=" class=""><strong>person_id</strong></td><td id="a_gH" class=""><strong>name</strong></td><td id="=yZx" class=""><strong>membership_start_date</strong></td><td id="\Pz&lt;" class=""><strong>membership_status</strong></td><td id="SP~w" class=""><strong>membership_id</strong></td><td id="eURg" class=""><strong>check_in_date</strong></td><td id="ydTm" class=""><strong>check_in_time</strong></td><td id="[iWc" class=""><strong>check_out_time</strong></td></tr><tr id="61348904-6898-4051-910f-9fecc598e7e6"><td id="Lmnw" class="">90081</td><td id="}Nh=" class="">16371</td><td id="a_gH" class="">Annabel Miller</td><td id="=yZx" class="">20160208</td><td id="\Pz&lt;" class="">gold</td><td id="SP~w" class="">90081</td><td id="eURg" class="">20180109</td><td id="ydTm" class="">1600</td><td id="[iWc" class="">1700</td></tr></tbody></table><h3 id="52543c6b-87c5-4dc2-b066-94ddbc7385f9" class="">get all the members checked out after her checkin</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="ce86f390-7421-4587-8178-c40d6bbbb72a" class="code"><code class="language-SQL">select *
+from get_fit_now_member fn
+inner join get_fit_now_check_in fc
+on fn.id=fc.membership_id
+where check_in_date = 20180109
+and check_out_time&gt;1600</code></pre><table id="a730bd0a-7185-41d5-b95f-de6857d8a6fb" class="simple-table"><tbody><tr id="5049754b-9338-4ba5-9190-26f674617688"><td id="x:v\" class=""><strong>id</strong></td><td id="Po}@" class=""><strong>person_id</strong></td><td id="V`sO" class=""><strong>name</strong></td><td id="axAk" class=""><strong>membership_start_date</strong></td><td id="qawf" class=""><strong>membership_status</strong></td><td id="~oTJ" class=""><strong>membership_id</strong></td><td id="Vn}z" class=""><strong>check_in_date</strong></td><td id="sebd" class=""><strong>check_in_time</strong></td><td id=":Ut]" class=""><strong>check_out_time</strong></td></tr><tr id="9c2fd691-62e0-41a8-9773-7212de0267e4"><td id="x:v\" class="">48Z7A</td><td id="Po}@" class="">28819</td><td id="V`sO" class="">Joe Germuska</td><td id="axAk" class="">20160305</td><td id="qawf" class="">gold</td><td id="~oTJ" class="">48Z7A</td><td id="Vn}z" class="">20180109</td><td id="sebd" class="">1600</td><td id=":Ut]" class="">1730</td></tr><tr id="8fb85d09-623a-4f76-97ac-9b2ddee8ad26"><td id="x:v\" class="">48Z55</td><td id="Po}@" class="">67318</td><td id="V`sO" class="">Jeremy Bowers</td><td id="axAk" class="">20160101</td><td id="qawf" class="">gold</td><td id="~oTJ" class="">48Z55</td><td id="Vn}z" class="">20180109</td><td id="sebd" class="">1530</td><td id=":Ut]" class="">1700</td></tr><tr id="a4c51702-96ef-4014-ab6e-2e76bac044bc"><td id="x:v\" class="">90081</td><td id="Po}@" class="">16371</td><td id="V`sO" class="">Annabel Miller</td><td id="axAk" class="">20160208</td><td id="qawf" class="">gold</td><td id="~oTJ" class="">90081</td><td id="Vn}z" class="">20180109</td><td id="sebd" class="">1600</td><td id=":Ut]" class="">1700</td></tr></tbody></table><h3 id="3b3c0f9b-4880-40f9-b08c-5502cf82d427" class="">interview (killer) — person matching both the witness</h3><figure id="6c7b5cc2-d63f-48f9-b204-fcea8c1fbdde" class="image"><a href="https://images.unsplash.com/photo-1607768178747-f4933d20ce75?ixlib=rb-4.0.3&amp;q=85&amp;fm=jpg&amp;crop=entropy&amp;cs=srgb"><img src="https://images.unsplash.com/photo-1607768178747-f4933d20ce75?ixlib=rb-4.0.3&amp;q=85&amp;fm=jpg&amp;crop=entropy&amp;cs=srgb"/></a></figure><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1070cd9e-b1cd-4f58-a89a-bc859a18068b" class="code"><code class="language-SQL">select *
+from interview
+ where person_id in (67318)</code></pre><table id="92f4c210-9a02-44ec-99ef-f611b3f994ac" class="simple-table"><tbody><tr id="fbe46256-0361-4502-99fb-c445bce8e145"><td id="aJCI" class=""><strong>person_id</strong></td><td id="Xxje" class=""><strong>transcript</strong></td></tr><tr id="60c7bbe5-7220-407f-8b70-f6510afbbcc5"><td id="aJCI" class="">67318</td><td id="Xxje" class="">I was hired by a woman with a lot of money. I don&#x27;t know her name but I know she&#x27;s around 5&#x27;5&quot; (65&quot;) or 5&#x27;7&quot; (67&quot;). She has red hair and she drives a Tesla Model S. I know that she attended the SQL Symphony Concert 3 times in December 2017.</td></tr></tbody></table><p id="274e73a4-8265-407d-be29-5d9ed7c4c62c" class="">above people</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="62d87279-85d8-45a6-9da5-13cd1137ff37" class="code"><code class="language-SQL">select *
+from person
+ where id in (67318)</code></pre><table id="b44d8d94-acfe-435e-b1c7-6910c4f8ea47" class="simple-table"><tbody><tr id="1f5e67af-4647-43bd-b44e-00224e97b959"><td id=":KUf" class=""><strong>id</strong></td><td id="Jfpj" class=""><strong>name</strong></td><td id="pJDD" class=""><strong>license_id</strong></td><td id="D_tK" class=""><strong>address_number</strong></td><td id="zbkm" class=""><strong>address_street_name</strong></td><td id="EX&lt;D" class=""><strong>ssn</strong></td></tr><tr id="3f9a80d8-f152-41e6-b144-3bdb0f1ca76c"><td id=":KUf" class="">67318</td><td id="Jfpj" class="">Jeremy Bowers</td><td id="pJDD" class="">423327</td><td id="D_tK" class="">530</td><td id="zbkm" class="">Washington Pl, Apt 3A</td><td id="EX&lt;D" class="">871539279</td></tr></tbody></table><p id="82b5a2f0-639c-49d6-a85b-69d086280442" class="">::: success 🎉</p><h3 id="8a9b8d58-6717-415c-87de-65090f028490" class="">Found murderer</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="8a2fcd2a-cef9-40bf-9a95-440e689e3a9f" class="code"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">INSERT INTO solution VALUES (1, &#x27;Jeremy Bowers&#x27;);
+        
+        SELECT value FROM solution;</code></pre><hr id="6d695f5a-ba9d-491a-911e-4c1f7908b821"/><p id="c298ba36-ab50-4e87-8116-8a87467e890f" class="">value</p><hr id="00c0382d-2e54-4d0c-86ef-8b1047f34d34"/><p id="ed4ec387-b74a-4a64-9d19-bdcc6fe21330" class="">Congrats, you found the murderer! But wait, there&#x27;s more... If you think you&#x27;re up for a challenge, try querying the interview transcript of the murderer to find the real villain behind this crime. If you feel especially confident in your SQL skills, try to complete this final step with no more than 2 queries. Use this same INSERT statement with your new suspect to check your answer.</p><hr id="404e8d57-ad4a-40db-a330-d5a8a8c27f7c"/><h3 id="88952be4-947a-4773-9499-c04126992729" class="">person matching killers desc</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="58d1deac-ad1d-4890-90c2-41901dcde666" class="code"><code class="language-SQL">select *
+from drivers_license dl
+left join person p
+on p.license_id=dl.id
+left join income i
+on p.ssn=i.ssn
+left join facebook_event_checkin fec
+on p.id=fec.person_id
+where fec.date between 20171201 and 20171231
+and event_name=&#x27;SQL Symphony Concert&#x27;
+and height between 65 and 67
+and gender = &#x27;female&#x27;
+and hair_color=&#x27;red&#x27;
+and car_make=&#x27;Tesla&#x27;
+limit 1</code></pre><table id="cc793001-18ae-4ca5-af17-002393a7dd55" class="simple-table"><tbody><tr id="58c077d8-17b4-468a-b441-4562080a4c98"><td id="RNBz" class=""><strong>id</strong></td><td id="EgCY" class=""><strong>age</strong></td><td id="kPE^" class=""><strong>height</strong></td><td id="y;N&lt;" class=""><strong>eye_color</strong></td><td id="_nsv" class=""><strong>hair_color</strong></td><td id="p@KN" class=""><strong>gender</strong></td><td id="CoyJ" class=""><strong>plate_number</strong></td><td id="DsV^" class=""><strong>car_make</strong></td><td id="?pp&lt;" class=""><strong>car_model</strong></td><td id="Jx@o" class=""><strong>id</strong></td><td id="QyC_" class=""><strong>name</strong></td><td id="MEY&lt;" class=""><strong>license_id</strong></td><td id="R{o=" class=""><strong>address_number</strong></td><td id="pcQG" class=""><strong>address_street_name</strong></td><td id="Y_MJ" class=""><strong>ssn</strong></td><td id="k|K{" class=""><strong>ssn</strong></td><td id="hFBO" class=""><strong>annual_income</strong></td><td id="XMjH" class=""><strong>person_id</strong></td><td id="[]DL" class=""><strong>event_id</strong></td><td id="oBHW" class=""><strong>event_name</strong></td><td id="&gt;`US" class=""><strong>date</strong></td></tr><tr id="7bafca8b-c8b8-469e-9c55-3322c47938b9"><td id="RNBz" class="">202298</td><td id="EgCY" class="">68</td><td id="kPE^" class="">66</td><td id="y;N&lt;" class="">green</td><td id="_nsv" class="">red</td><td id="p@KN" class="">female</td><td id="CoyJ" class="">500123</td><td id="DsV^" class="">Tesla</td><td id="?pp&lt;" class="">Model S</td><td id="Jx@o" class="">99716</td><td id="QyC_" class="">Miranda Priestly</td><td id="MEY&lt;" class="">202298</td><td id="R{o=" class="">1883</td><td id="pcQG" class="">Golden Ave</td><td id="Y_MJ" class="">987756388</td><td id="k|K{" class="">987756388</td><td id="hFBO" class="">310000</td><td id="XMjH" class="">99716</td><td id="[]DL" class="">1143</td><td id="oBHW" class="">SQL Symphony Concert</td><td id="&gt;`US" class="">20171206</td></tr></tbody></table><h2 id="f2b3a7b4-b24d-40ca-9778-81dd6a1ec3a7" class="">👮‍♂️found the murder and villain</h2><figure id="2fdefb3d-bca3-462c-9618-38080ec7de93" class="image"><a href="https://media0.giphy.com/media/69jvP3VXUYhr3YUYu9/giphy.gif?cid=7941fdc6ws29yj4jkbasyaibofhc195lqa6w2p40ggcbl50c&amp;ep=v1_gifs_search&amp;rid=giphy.gif&amp;ct=g"><img src="https://media0.giphy.com/media/69jvP3VXUYhr3YUYu9/giphy.gif?cid=7941fdc6ws29yj4jkbasyaibofhc195lqa6w2p40ggcbl50c&amp;ep=v1_gifs_search&amp;rid=giphy.gif&amp;ct=g"/></a></figure><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="93214eb8-3758-4eb6-adeb-e2e854ba7742" class="code"><code class="language-SQL">INSERT INTO solution VALUES (1, &#x27;Miranda Priestly&#x27;);
+        
+        SELECT value FROM solution;</code></pre><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="042ceed0-4da5-4f83-b9e3-db675fbbc6fa"><div style="font-size:1.5em"><span class="icon">👏</span></div><div style="width:100%">Congratulations on cracking the SQL murder mystery!</div></figure><p id="4bae6ea6-7360-4c5a-8afd-d92c2508ac53" class="">::: info 💡</p><p id="cdbd7ab0-f13d-438e-ab7a-0b0d0ab4fff9" class="">This showcases your exceptional skills in SQL and problem-solving.</p><p id="4c2ad3d6-8e32-42c1-a5fe-bdc8c53c6358" class="">:::<br/>::: success 🎉<br/></p><p id="75adb282-17f3-491e-8e70-91122927831e" class="">Everyone in SQL City hails you as the greatest SQL detective of all time. Time to break out the champagne!</p><p id="8679aa26-9088-4ee1-91b9-19293d236220" class="">:::</p><p id="78437769-cf79-41ee-b702-03f8ee3b9444" class=""><strong>value</strong></p><hr id="cc307e45-f210-41e6-86d6-1b47691ab734"/><p id="dbc88bce-248c-447c-bf55-c1ffe4c3bdd3" class=""><strong>Congrats, you found the brains behind the murder! Everyone in SQL City hails you as the greatest SQL detective of all time. Time to break out the champagne!</strong></p><hr id="a6923705-5edf-4387-a005-a3ae525dee2f"/><p id="19e12b56-bec5-4d20-ab56-b6ec568d66d2" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
